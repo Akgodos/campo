@@ -231,15 +231,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 ══════════════════════════════════════════════ */
 @media (max-width:700px){
 
-  /* Ocultar navbar top, usar bottom nav */
+  /* Hide desktop navbar, show mobile bottom nav */
   .navbar { display:none; }
+  .desktop-only { display:none !important; }
 
   /* Bottom navigation bar */
   .mobile-nav {
     display:flex;
     position:fixed; bottom:0; left:0; right:0;
     background:var(--surface); border-top:1px solid var(--border);
-    z-index:1000; height:58px; flex-shrink:0;
+    z-index:1000; height:56px; flex-shrink:0;
   }
   .mobile-nav-btn {
     flex:1; display:flex; flex-direction:column; align-items:center;
@@ -248,96 +249,134 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     font-size:0.55rem; cursor:pointer; transition:all .15s;
     padding-bottom:env(safe-area-inset-bottom, 0px);
   }
-  .mobile-nav-btn .nav-icon { font-size:1.3rem; line-height:1; }
+  .mobile-nav-btn .nav-icon { font-size:1.25rem; line-height:1; }
   .mobile-nav-btn.active { color:var(--blue); }
-  .mobile-nav-btn.active .nav-icon { filter:drop-shadow(0 0 4px var(--blue)); }
 
-  /* Pages fill screen minus bottom nav */
   body { overflow:hidden; }
-  .page {
-    padding-bottom:0;
-    height:calc(100vh - 58px); /* 58px = bottom nav */
-  }
+
+  /* ── RUTAS PAGE: strict column layout ── */
   #page-rutas {
-    display:flex; flex-direction:column;
-    height:calc(100vh - 58px);
+    display:block !important;
+    height:calc(100vh - 56px);
     overflow:hidden;
   }
   .page-rutas-inner {
-    flex:1; min-height:0;
-    display:flex; flex-direction:column;
+    display:block !important;
+    height:100%;
+    overflow:hidden;
   }
 
-  /* ── RUTAS PAGE MOBILE ── */
-  .page-rutas-inner {
-    display:flex; flex-direction:column;
-    height:100%; overflow:hidden;
-  }
+  /* Stats header — compact */
   .rutas-header {
-    padding:8px 12px; gap:6px; flex-wrap:nowrap; flex-shrink:0;
+    flex-shrink:0;
+    padding:6px 10px; gap:5px; flex-wrap:nowrap;
+    border-bottom:1px solid var(--border);
   }
-  .stats-bar { gap:10px; }
-  .stat-num { font-size:0.95rem; }
-  .stat-label { font-size:0.5rem; }
-  .progress-bar-bg { width:70px; }
-  .progress-pct { font-size:0.62rem; min-width:24px; }
-  .view-btn { padding:4px 7px; font-size:0.58rem; }
+  .stats-bar { gap:8px; }
+  .stat-num { font-size:0.9rem; }
+  .stat-label { font-size:0.48rem; }
+  .progress-bar-bg { width:60px; }
+  .progress-pct { font-size:0.6rem; min-width:22px; }
+  .view-btn { padding:3px 6px; font-size:0.56rem; }
 
-  /* Map fills remaining space, sidebar hidden */
+  /* rutas-main: map only, fills space between header and toolbar */
   .rutas-main {
-    grid-template-columns:1fr;
-    flex:1; min-height:0;
+    display:block !important;
     position:relative;
+    /* 56 = bottom nav, 44 = stats header, 62 = toolbar */
+    height:calc(100vh - 56px - 44px - 62px);
+    overflow:hidden;
+    flex-shrink:0;
   }
   .sidebar { display:none; }
   .map-area {
-    position:absolute; inset:0;
+    position:absolute !important;
+    top:0; left:0; right:0; bottom:0;
+    display:block !important;
+    overflow:hidden;
   }
-  #map { width:100%; height:100%; }
+  #map { width:100% !important; height:100% !important; flex:none !important; }
 
-  /* GPS button — above bottom nav, centered */
-  .gps-btn {
-    bottom:76px; font-size:0.7rem; padding:8px 16px;
+  /* ════════════════════════════════════════
+     MOBILE MAP TOOLBAR — fixed bar above bottom nav
+     ALWAYS on top, NEVER covered by map
+  ════════════════════════════════════════ */
+  .mobile-map-toolbar {
+    flex-shrink:0;
+    background:var(--surface);
+    border-top:1px solid var(--border);
+    padding:6px 8px 6px;
+    display:flex; flex-direction:column; gap:5px;
+    z-index:500;
+  }
+
+  .toolbar-gps-info {
+    display:none;
+    font-size:0.62rem; color:var(--muted);
+    padding:3px 6px; background:var(--surface2);
+    border-radius:6px; gap:8px; align-items:center;
+    flex-wrap:wrap;
+  }
+  .toolbar-gps-info.show { display:flex; }
+  .toolbar-gps-info #toolbar-nearest { color:var(--green); font-weight:600; }
+
+  .toolbar-buttons {
+    display:flex; gap:5px; align-items:stretch;
+  }
+
+  .toolbar-btn {
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:2px;
+    padding:6px 4px;
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:9px; cursor:pointer; color:var(--text);
+    font-family:'Syne',sans-serif; font-weight:700; font-size:0.52rem;
+    transition:all .15s; min-height:50px;
+  }
+  .toolbar-btn span:first-child { font-size:1.25rem; line-height:1; }
+  .toolbar-btn:active { background:var(--border); }
+
+  .toolbar-btn.gps-main { background:var(--blue-l); border-color:var(--blue)44; color:var(--blue); }
+  .toolbar-btn.gps-main.tracking { background:var(--blue); color:#0f1117; }
+  .toolbar-btn.gps-main.searching { background:var(--yellow-l); color:var(--yellow); border-color:var(--yellow)44; }
+
+  /* GPS panel floats above toolbar when visible */
+  .gps-panel {
+    position:fixed;
+    bottom:calc(56px + 70px); /* above bottom nav + toolbar */
     left:50%; transform:translateX(-50%);
+    z-index:600;
+    min-width:260px; max-width:90vw;
   }
-  .gps-panel { bottom:120px; min-width:240px; max-width:90vw; left:50%; transform:translateX(-50%); }
 
-  /* Map action buttons — left side to avoid overlap */
-  .map-actions {
-    bottom:76px; right:10px;
+  /* Legend stays top-right of map — increase z-index */
+  .map-overlay { top:8px; right:8px; z-index:400; }
+  .legend-card {
+    min-width:140px; padding:6px 9px;
+    background:rgba(15,17,23,0.95);
   }
-  .map-action-btn { width:42px; height:42px; font-size:1.2rem; }
+  .legend-title { font-size:0.54rem; }
+  .legend-item { font-size:0.58rem; }
+  .day-badge { font-size:0.46rem; }
+  .legend-progress-label { font-size:0.54rem; }
 
-  /* Legend — smaller, top right */
-  .map-overlay { top:8px; right:8px; }
-  .legend-card { min-width:150px; padding:6px 9px; }
-  .legend-title { font-size:0.55rem; }
-  .legend-item { font-size:0.6rem; }
-  .day-badge { font-size:0.48rem; }
-
-  /* ── BOTTOM SHEET (sidebar as drawer) ── */
-  .sheet-toggle-btn {
-    position:absolute; top:10px; left:10px; z-index:20;
-    background:rgba(15,17,23,0.93); border:1px solid var(--border);
-    border-radius:10px; padding:8px 13px; color:var(--text);
-    font-family:'Syne',sans-serif; font-weight:700; font-size:0.72rem;
-    cursor:pointer; display:flex; align-items:center; gap:6px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.4); backdrop-filter:blur(8px);
-    min-height:40px;
-  }
+  /* ── BOTTOM SHEET ── */
+  .sheet-toggle-btn { display:none; } /* replaced by toolbar button */
 
   .sheet-backdrop {
     display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
-    z-index:500; backdrop-filter:blur(2px);
+    z-index:700; backdrop-filter:blur(2px);
   }
   .sheet-backdrop.open { display:block; }
 
   .bottom-sheet {
-    position:fixed; left:0; right:0; bottom:58px; z-index:600;
+    position:fixed; left:0; right:0;
+    bottom:calc(56px + 62px); /* above bottom nav + toolbar */
+    z-index:800;
     background:var(--surface); border-top:1px solid var(--border);
     border-radius:20px 20px 0 0;
     transform:translateY(100%); transition:transform .3s cubic-bezier(.4,0,.2,1);
-    max-height:78vh; display:flex; flex-direction:column;
+    max-height:65vh; display:flex; flex-direction:column;
     box-shadow:0 -4px 30px rgba(0,0,0,0.5);
   }
   .bottom-sheet.open { transform:translateY(0); }
@@ -348,8 +387,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   }
   .sheet-header {
     padding:8px 14px 10px; display:flex; align-items:center;
-    justify-content:space-between; border-bottom:1px solid var(--border);
-    flex-shrink:0;
+    justify-content:space-between; border-bottom:1px solid var(--border); flex-shrink:0;
   }
   .sheet-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; }
   .sheet-close {
@@ -362,50 +400,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   .sheet-content::-webkit-scrollbar { width:3px; }
   .sheet-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
-  /* Bigger touch targets for block rows */
+  /* Bigger touch targets */
   .block-row { padding:10px 10px; min-height:48px; }
   .block-loc { font-size:0.78rem; }
-  .block-type { font-size:0.64rem; }
-  .block-short { font-size:0.8rem; }
-  .step-num { width:22px; height:22px; font-size:0.65rem; }
-  .block-actions { opacity:1; } /* always visible on mobile */
+  .block-actions { opacity:1; }
   .action-btn { padding:6px 8px; font-size:0.75rem; }
 
-  .zone-header { padding:12px 12px; }
-  .zone-title { font-size:0.82rem; }
-  .zone-badge,.zone-done-badge { font-size:0.62rem; padding:3px 8px; }
-
   /* ── ESTAB PAGE MOBILE ── */
+  #page-estab {
+    height:calc(100vh - 56px);
+    overflow-y:auto;
+  }
   .page-estab { padding:10px 12px; }
   .estab-hero { padding:10px 0 8px; }
-  .estab-hero h2 { font-size:1.15rem; }
+  .estab-hero h2 { font-size:1.1rem; }
   .estab-hero p { font-size:0.72rem; }
-  .search-input { font-size:0.82rem; padding:10px 14px 10px 38px; border-radius:10px; }
+  .search-input { font-size:0.82rem; padding:10px 14px 10px 38px; }
   .decision-tool { padding:12px; border-radius:12px; }
   .decision-opt { padding:8px 14px; font-size:0.78rem; min-height:40px; }
   .decision-result { font-size:0.82rem; padding:10px 12px; }
-  .cat-filters { gap:5px; }
   .cat-btn { padding:6px 12px; font-size:0.7rem; min-height:34px; }
   .estab-grid { grid-template-columns:1fr; gap:5px; }
-  .estab-card { padding:12px 12px; }
+  .estab-card { padding:12px; }
   .estab-name { font-size:0.82rem; margin-bottom:8px; }
   .estab-pill { font-size:0.68rem; padding:3px 10px; }
-  .estab-row { font-size:0.72rem; margin-bottom:5px; }
-  .estab-row-label { width:90px; }
 
-  /* Legend smaller on mobile */
-  .legend-card { min-width:160px; padding:7px 10px; }
-  .legend-title { font-size:0.58rem; }
-  .legend-item { font-size:0.62rem; }
-  .day-badge { font-size:0.5rem; }
-
-  /* Save indicator above bottom nav */
-  .save-indicator { bottom:66px; }
+  .save-indicator { bottom:calc(56px + 68px); }
 }
 
 /* Desktop: hide mobile-only elements */
 @media (min-width:701px){
   .mobile-nav { display:none; }
+  .mobile-map-toolbar { display:none; }
   .sheet-toggle-btn { display:none; }
   .sheet-backdrop { display:none !important; }
   .bottom-sheet { display:none !important; }
@@ -468,14 +494,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="sidebar" id="sidebar"></div>
     <div class="map-area">
       <div id="map"></div>
-      <!-- Sheet toggle button (mobile only) -->
-      <button class="sheet-toggle-btn" onclick="openSheet()">
-        📋 <span id="sheet-btn-label">Ver bloques</span>
-      </button>
-      <div class="map-overlay">
+      <!-- Legend overlay — desktop only visible here, mobile moved to toolbar -->
+      <div class="map-overlay desktop-only">
         <div class="legend-card" id="legend"><div class="legend-title">Zonas — clic para centrar</div></div>
       </div>
-      <!-- GPS PANEL -->
+      <!-- GPS PANEL — floats above map on desktop -->
       <div class="gps-panel" id="gps-panel">
         <div class="gps-panel-title">📍 Mi ubicación actual</div>
         <div class="gps-row"><span class="gps-label">Latitud</span><span class="gps-val" id="gps-lat">—</span></div>
@@ -488,20 +511,48 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
         </div>
         <div class="gps-error" id="gps-error" style="display:none"></div>
       </div>
-      <!-- GPS BUTTON -->
-      <button class="gps-btn idle" id="gps-btn" onclick="toggleGPS()">
-        <span id="gps-btn-icon">📍</span>
-        <span id="gps-btn-text">Activar mi ubicación</span>
+      <!-- Desktop GPS + action buttons (inside map area on desktop) -->
+      <button class="gps-btn idle desktop-only" id="gps-btn-desk" onclick="toggleGPS()">
+        <span id="gps-btn-icon-desk">📍</span>
+        <span id="gps-btn-text-desk">Activar mi ubicación</span>
       </button>
-      <!-- MAP ACTION BUTTONS -->
-      <div class="map-actions">
-        <button class="map-action-btn" id="center-btn" onclick="centerOnMe()" title="Centrar en mi posición">🎯</button>
+      <div class="map-actions desktop-only">
+        <button class="map-action-btn" onclick="centerOnMe()" title="Centrar">🎯</button>
         <button class="map-action-btn" id="rotate-lock-btn" onclick="toggleRotationLock()" title="Fijar rotación">🔒</button>
         <button class="map-action-btn" onclick="resetRotation()" title="Norte arriba">⬆️</button>
         <div class="rotation-display" id="rotation-display">0°</div>
       </div>
     </div>
   </div>
+
+  <!-- ═══ MOBILE MAP TOOLBAR — always visible, never inside map ═══ -->
+  <div class="mobile-map-toolbar" id="mobile-toolbar">
+    <!-- Row 1: GPS status info (hidden until GPS active) -->
+    <div class="toolbar-gps-info" id="toolbar-gps-info">
+      <span id="toolbar-gps-acc">Buscando señal...</span>
+      <span id="toolbar-nearest" style="display:none"></span>
+    </div>
+    <!-- Row 2: action buttons -->
+    <div class="toolbar-buttons">
+      <button class="toolbar-btn gps-main" id="gps-btn" onclick="toggleGPS()">
+        <span id="gps-btn-icon">📍</span>
+        <span id="gps-btn-text">Mi ubicación</span>
+      </button>
+      <button class="toolbar-btn" onclick="centerOnMe()" title="Centrar en mí">
+        <span>🎯</span><span>Centrar</span>
+      </button>
+      <button class="toolbar-btn" id="rotate-lock-btn-mob" onclick="toggleRotationLock()">
+        <span>🔒</span><span id="rot-deg">0°</span>
+      </button>
+      <button class="toolbar-btn" onclick="resetRotation()">
+        <span>⬆️</span><span>Norte</span>
+      </button>
+      <button class="toolbar-btn" onclick="openSheet()">
+        <span>📋</span><span id="sheet-btn-label">Bloques</span>
+      </button>
+    </div>
+  </div>
+
 </div>
 </div>
 
@@ -1202,10 +1253,25 @@ function stopGPS() {
 }
 
 function setGPSBtn(state, icon, text) {
+  // Mobile toolbar button
   const btn = document.getElementById('gps-btn');
-  btn.className = `gps-btn ${state}`;
-  document.getElementById('gps-btn-icon').textContent = icon;
-  document.getElementById('gps-btn-text').textContent = text;
+  if (btn) {
+    btn.className = `toolbar-btn gps-main ${state}`;
+    document.getElementById('gps-btn-icon').textContent = icon;
+    document.getElementById('gps-btn-text').textContent = text;
+  }
+  // Desktop button
+  const dBtn = document.getElementById('gps-btn-desk');
+  if (dBtn) {
+    dBtn.className = `gps-btn ${state}`;
+    const di = document.getElementById('gps-btn-icon-desk');
+    const dt = document.getElementById('gps-btn-text-desk');
+    if (di) di.textContent = icon;
+    if (dt) dt.textContent = text;
+  }
+  // Show/hide GPS info bar on mobile
+  const info = document.getElementById('toolbar-gps-info');
+  if (info) info.classList.toggle('show', state !== 'idle');
 }
 
 // ── MAP ROTATION & COMPASS ───────────────────────
@@ -1220,29 +1286,34 @@ function rotateMap(deg) {
   const pane = map.getContainer();
   pane.style.transform = `rotate(${mapRotation}deg)`;
   pane.style.transformOrigin = 'center center';
-  // Keep controls upright
   document.querySelectorAll('.leaflet-control-container').forEach(c => {
     c.style.transform = `rotate(${-mapRotation}deg)`;
     c.style.transformOrigin = 'center center';
   });
+  // Update degree display in both desktop and mobile
   const disp = document.getElementById('rotation-display');
   if (disp) disp.textContent = Math.round(mapRotation) + '°';
+  const rotDeg = document.getElementById('rot-deg');
+  if (rotDeg) rotDeg.textContent = Math.round(mapRotation) + '°';
 }
 
 function resetRotation() {
   rotationLocked = false;
   rotateMap(0);
-  const btn = document.getElementById('rotate-lock-btn');
-  if (btn) { btn.style.background = ''; btn.style.color = ''; }
+  ['rotate-lock-btn','rotate-lock-btn-mob'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) { b.style.background = ''; b.style.color = ''; b.style.borderColor = ''; }
+  });
 }
 
 function toggleRotationLock() {
   rotationLocked = !rotationLocked;
-  const btn = document.getElementById('rotate-lock-btn');
-  if (btn) {
-    if (rotationLocked) { btn.style.background = 'var(--blue-l)'; btn.style.color = 'var(--blue)'; }
-    else { btn.style.background = ''; btn.style.color = ''; }
-  }
+  ['rotate-lock-btn','rotate-lock-btn-mob'].forEach(id => {
+    const b = document.getElementById(id);
+    if (!b) return;
+    if (rotationLocked) { b.style.background = 'var(--blue-l)'; b.style.color = 'var(--blue)'; b.style.borderColor = 'var(--blue)'; }
+    else { b.style.background = ''; b.style.color = ''; b.style.borderColor = ''; }
+  });
 }
 
 function centerOnMe() {
@@ -1368,13 +1439,24 @@ function findNearestBlock(lat, lng) {
     });
   });
   if (!nearest) return;
+  // Desktop GPS panel
   const panel = document.getElementById('gps-nearest');
-  panel.style.display = 'block';
-  const distM = Math.round(nearest.dist * 1000);
-  const distText = distM < 1000 ? `${distM} metros` : `${(nearest.dist).toFixed(1)} km`;
-  document.getElementById('gps-near-name').innerHTML = `<span style="color:${nearest.zone.color}">${nearest.block.short}</span> — ${nearest.block.loc}`;
-  document.getElementById('gps-near-dist').textContent = `A ${distText} de distancia · ${nearest.block.type}`;
-  panel.style.borderColor = nearest.zone.color + '55';
+  if (panel) {
+    panel.style.display = 'block';
+    const distM = Math.round(nearest.dist * 1000);
+    const distText = distM < 1000 ? `${distM}m` : `${nearest.dist.toFixed(1)}km`;
+    document.getElementById('gps-near-name').innerHTML = `<span style="color:${nearest.zone.color}">${nearest.block.short}</span> — ${nearest.block.loc}`;
+    document.getElementById('gps-near-dist').textContent = `A ${distText} · ${nearest.block.type}`;
+    panel.style.borderColor = nearest.zone.color + '55';
+  }
+  // Mobile toolbar info bar
+  const tn = document.getElementById('toolbar-nearest');
+  if (tn) {
+    const distM = Math.round(nearest.dist * 1000);
+    const distText = distM < 1000 ? `${distM}m` : `${nearest.dist.toFixed(1)}km`;
+    tn.innerHTML = `🎯 <span style="color:${nearest.zone.color};font-weight:700">${nearest.block.short}</span> a ${distText}`;
+    tn.style.display = 'inline';
+  }
 }
 
 // ── MOBILE BOTTOM SHEET ──────────────────────────
